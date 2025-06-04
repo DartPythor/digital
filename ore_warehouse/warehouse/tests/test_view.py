@@ -1,7 +1,9 @@
-from django.test import TestCase, Client
-from django.urls import reverse
 from unittest.mock import patch
-from warehouse.models import Warehouse, DumpTruck, TruckModel
+
+from django.test import Client, TestCase
+from django.urls import reverse
+
+from warehouse.models import DumpTruck, TruckModel, Warehouse
 from warehouse.views import WarehouseView
 
 
@@ -15,9 +17,13 @@ class WarehouseViewTests(TestCase):
             initial_fe=0.3,
         )
 
-        model1 = TruckModel.objects.create(name="CAT-777", max_capacity=100)
+        model1 = TruckModel.objects.create(
+            name="CAT-777",
+            max_capacity=100,
+        )
         model2 = TruckModel.objects.create(
-            name="Komatsu-930", max_capacity=150
+            name="Komatsu-930",
+            max_capacity=150,
         )
 
         self.truck1 = DumpTruck.objects.create(
@@ -117,9 +123,11 @@ class WarehouseViewTests(TestCase):
         self.truck2.unload_y = 15
         self.truck2.save()
 
-        # Создаем третий самосвал без координат
-        model = TruckModel.objects.create(name="BELAZ-7555", max_capacity=200)
-        truck3 = DumpTruck.objects.create(
+        model = TruckModel.objects.create(
+            name="BELAZ-7555",
+            max_capacity=200,
+        )
+        DumpTruck.objects.create(
             board_number="CC-003",
             model=model,
             current_weight=180,
@@ -129,21 +137,31 @@ class WarehouseViewTests(TestCase):
 
         trucks = DumpTruck.objects.all()
         accepted = WarehouseView.get_accepted_trucks(
-            trucks, self.warehouse.area_wkt
+            trucks,
+            self.warehouse.area_wkt,
         )
 
         self.assertEqual(len(accepted), 1)
         self.assertEqual(accepted[0], self.truck1)
 
         self.assertEqual(mock_in_polygon.call_count, 2)
-        mock_in_polygon.assert_any_call(5.0, 5.0, self.warehouse.area_wkt)
-        mock_in_polygon.assert_any_call(15.0, 15.0, self.warehouse.area_wkt)
+        mock_in_polygon.assert_any_call(
+            5.0,
+            5.0,
+            self.warehouse.area_wkt,
+        )
+        mock_in_polygon.assert_any_call(
+            15.0,
+            15.0,
+            self.warehouse.area_wkt,
+        )
 
     def test_calculate_quality_method(self):
         accepted_trucks = [self.truck1, self.truck2]
 
         result = WarehouseView.calculate_quality(
-            self.warehouse, accepted_trucks
+            self.warehouse,
+            accepted_trucks,
         )
 
         total_weight = 1000 + 90 + 140
@@ -153,9 +171,15 @@ class WarehouseViewTests(TestCase):
         self.assertIn("Fe", result["quality_after"])
         self.assertIn("%", result["quality_after"])
 
-        result_empty = WarehouseView.calculate_quality(self.warehouse, [])
+        result_empty = WarehouseView.calculate_quality(
+            self.warehouse,
+            [],
+        )
         self.assertEqual(result_empty["total_after"], 1000)
-        self.assertEqual(result_empty["quality_after"], "0.5% SiO2, 0.3% Fe")
+        self.assertEqual(
+            result_empty["quality_after"],
+            "0.5% SiO2, 0.3% Fe",
+        )
 
     @patch("warehouse.views.is_point_in_polygon")
     def test_edge_cases(self, mock_in_polygon):
@@ -171,7 +195,8 @@ class WarehouseViewTests(TestCase):
 
         trucks = DumpTruck.objects.all()
         accepted = WarehouseView.get_accepted_trucks(
-            trucks, self.warehouse.area_wkt
+            trucks,
+            self.warehouse.area_wkt,
         )
         self.assertEqual(len(accepted), 2)
 
@@ -179,6 +204,15 @@ class WarehouseViewTests(TestCase):
         self.warehouse.save()
 
         result = WarehouseView.calculate_quality(self.warehouse, accepted)
-        self.assertEqual(result["total_after"], 230)
+        self.assertEqual(
+            result["total_after"],
+            230,
+        )
 
-        self.assertNotEqual(result["quality_after"], "0% SiO2, 0% Fe")
+        self.assertNotEqual(
+            result["quality_after"],
+            "0% SiO2, 0% Fe",
+        )
+
+
+__all__ = ()

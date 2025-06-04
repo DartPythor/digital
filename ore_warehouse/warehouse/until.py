@@ -7,3 +7,6 @@ def is_point_in_polygon(x: float, y: float, poly_str: str) -> bool:
     polygon = wkt.loads(wkt_str)
     point = Point(x, y)
     return polygon.covers(point)
+
+
+__all__ = ()

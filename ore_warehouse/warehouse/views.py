@@ -15,7 +15,10 @@ class WarehouseView(TemplateView):
         warehouse = Warehouse.objects.first()
 
         if warehouse:
-            accepted_trucks = self.get_accepted_trucks(trucks, warehouse.area_wkt)
+            accepted_trucks = self.get_accepted_trucks(
+                trucks,
+                warehouse.area_wkt,
+            )
             quality_info = self.calculate_quality(warehouse, accepted_trucks)
         else:
             accepted_trucks = []
@@ -30,7 +33,7 @@ class WarehouseView(TemplateView):
                 "warehouse": warehouse,
                 "accepted_trucks": accepted_trucks,
                 **quality_info,
-            }
+            },
         )
         return context
 
@@ -55,7 +58,11 @@ class WarehouseView(TemplateView):
         accepted = []
         for truck in trucks:
             if truck.unload_x is not None and truck.unload_y is not None:
-                in_area = is_point_in_polygon(truck.unload_x, truck.unload_y, polygon)
+                in_area = is_point_in_polygon(
+                    truck.unload_x,
+                    truck.unload_y,
+                    polygon,
+                )
                 if in_area:
                     accepted.append(truck)
         return accepted
@@ -85,3 +92,6 @@ class WarehouseView(TemplateView):
             "total_after": w1,
             "quality_after": f"{si_final}% SiO2, {fe_final}% Fe",
         }
+
+
+__all__ = ()

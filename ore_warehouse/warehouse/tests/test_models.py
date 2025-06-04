@@ -1,5 +1,6 @@
 from django.test import TestCase
-from warehouse.models import TruckModel, DumpTruck, Warehouse
+
+from warehouse.models import DumpTruck, TruckModel, Warehouse
 from warehouse.until import is_point_in_polygon
 
 
@@ -75,3 +76,6 @@ class WarehouseTest(TestCase):
         self.assertTrue(
             is_point_in_polygon(30, 10, self.warehouse.area_wkt),
         )
+
+
+__all__ = ()
