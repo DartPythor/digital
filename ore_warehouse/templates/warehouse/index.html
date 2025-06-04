@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Склад руды</title>
+</head>
+<body>
+  <h1>Самосвалы</h1>
+  <form method="post">
+    {% csrf_token %}
+    <table border="1" cellpadding="5">
+      <tr>
+        <th>Бортовой номер</th>
+        <th>Модель</th>
+        <th>Макс. грузоподъёмность</th>
+        <th>Текущий вес</th>
+        <th>Перегруз, %</th>
+        <th>Координаты разгрузки (X Y)</th>
+      </tr>
+      {% for truck in trucks %}
+      <tr>
+        <td>{{ truck.board_number }}</td>
+        <td>{{ truck.model.name }}</td>
+        <td>{{ truck.model.max_capacity }}</td>
+        <td>{{ truck.current_weight }}</td>
+        <td>{{ truck.overload_percent }}</td>
+        <td>
+          <input name="unload_{{ truck.id }}" type="text"
+                 value="{% if truck.unload_x and truck.unload_y %}{{ truck.unload_x }} {{ truck.unload_y }}{% endif %}"
+                 placeholder="X Y">
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+    <br>
+    <button type="submit">Рассчитать</button>
+  </form>
+
+  <h2>Состояние склада</h2>
+  <table border="1" cellpadding="5">
+    <tr>
+      <th>Название склада</th>
+      <th>Объем до разгрузки, т</th>
+      <th>Объем после разгрузки, т</th>
+      <th>Качественные характеристики после разгрузки</th>
+    </tr>
+    <tr>
+      <td>{{ warehouse.name }}</td>
+      <td>{{ warehouse.initial_weight }}</td>
+      <td>{{ total_after }}</td>
+      <td>{{ quality_after }}</td>
+    </tr>
+  </table>
+</body>
+</html>
