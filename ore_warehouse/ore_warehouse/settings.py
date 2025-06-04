@@ -1,14 +1,26 @@
 from pathlib import Path
 
+import environ
+from dotenv import load_dotenv
+
+env = environ.Env()
+environ.Env.read_env()
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = (
-    "django-insecure-qre4=y7&#q8+$t&kf^#s_c9&0xze+8*%=7h$h$(d5k2$l2vp!r"
+    env(
+        "SECRET_KEY",
+        cast=str,
+        default="django-insecure-mdvnoln%ud#8ky7@45nv!&-mlu7qs%zwd)--!$@$fza#2g21sy",
+    ),
 )
 
-DEBUG = True
+DEBUG = env("DEBUG", cast=bool, default=True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
+
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -34,7 +46,7 @@ ROOT_URLCONF = "ore_warehouse.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -48,20 +60,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "ore_warehouse.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
-    }
+    },
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -78,10 +82,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "UTC"
@@ -90,13 +90,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
 STATIC_URL = "static/"
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+STATIC_ROOT = BASE_DIR / "static"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
